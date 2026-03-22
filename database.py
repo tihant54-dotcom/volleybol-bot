@@ -1,10 +1,16 @@
 import aiosqlite
 import json
+import os
 from datetime import datetime
 from config import DB_PATH
 
 
 async def init_db():
+    # Создаём папку если её нет (Railway volume может не создать автоматически)
+    db_dir = os.path.dirname(DB_PATH)
+    if db_dir and not os.path.exists(db_dir):
+        os.makedirs(db_dir, exist_ok=True)
+
     async with aiosqlite.connect(DB_PATH) as db:
         await db.executescript("""
             CREATE TABLE IF NOT EXISTS users (

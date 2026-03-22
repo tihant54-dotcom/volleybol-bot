@@ -35,7 +35,9 @@ STRATEGY = {
     "tiebreak_max": 15,             # максимум тай-брейка
 }
 
-DB_PATH = os.getenv("DB_PATH", "volleyball.db")
+# Если /data не существует — используем текущую папку как fallback
+_db_default = "/data/volleyball.db" if os.path.exists("/data") else "volleyball.db"
+DB_PATH = os.getenv("DB_PATH", _db_default)
 
 SOFASCORE_HEADERS = {
     "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15",

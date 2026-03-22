@@ -236,15 +236,25 @@ async def unknown_cmd(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 # ─── Запуск ───────────────────────────────────────────────────────────────────
 
 async def post_init(app: Application):
-    await db.init_db()
-    await app.bot.set_my_commands([
-        BotCommand("start",   "Запустить бота"),
-        BotCommand("leagues", "Выбрать лиги"),
-        BotCommand("status",  "Live-матчи сейчас"),
-        BotCommand("history", "История сигналов"),
-        BotCommand("stats",   "Моя статистика"),
-        BotCommand("help",    "Помощь"),
-    ])
+    try:
+        await db.init_db()
+        log.info("Database initialized")
+    except Exception as e:
+        log.error("DB init failed: %s", e, exc_info=True)
+        raise
+
+    try:
+        await app.bot.set_my_commands([
+            BotCommand("start",   "Запустить бота"),
+            BotCommand("leagues", "Выбрать лиги"),
+            BotCommand("status",  "Live-матчи сейчас"),
+            BotCommand("history", "История сигналов"),
+            BotCommand("stats",   "Моя статистика"),
+            BotCommand("help",    "Помощь"),
+        ])
+    except Exception as e:
+        log.warning("Could not set commands: %s", e)
+
     log.info("Bot initialized, starting scheduler...")
     asyncio.create_task(scheduler.scheduler_loop(app.bot))
 
